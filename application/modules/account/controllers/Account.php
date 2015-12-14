@@ -40,14 +40,16 @@ class Account extends Base_Controller {
         
         $username = $this->input->post('username');
         $password = $this->input->post('password');
+        $login_type = $this->input->post('login_type') ? $this->input->post('login_type') : Common_flag::LOGIN_ACCOUNT_LOGIN_TYPE_COMMON_CONTACT_MOBILE;
 
-        if($this->account_model->admin_login($username, $password)){
+        if($this->account_model->admin_login($username, $password, $login_type)){
             $this->response($this->response_message->get_message());
         }
         else{
-            $this->response($this->response_message->get_message(), HEADER_NOT_FOUND);
+            $this->response($this->response_message->get_message(), WA_HEADER_NOT_FOUND);
         }
     }
+    
     
 //    public function create_user(){
 //        $this->is_required($this->input->post(), array('username'));
@@ -56,7 +58,7 @@ class Account extends Base_Controller {
 //            $this->response($this->response_message->get_message());
 //        }
 //        else{
-//            $this->response($this->response_message->get_message(), HEADER_NOT_FOUND);
+//            $this->response($this->response_message->get_message(), WA_HEADER_NOT_FOUND);
 //        }
 //    }
     
@@ -76,7 +78,7 @@ class Account extends Base_Controller {
             $this->response($this->response_message->get_message());
         }
         else{
-            $this->response($this->response_message->get_message(), HEADER_NOT_FOUND);
+            $this->response($this->response_message->get_message(), WA_HEADER_NOT_FOUND);
         }
     }
     
@@ -87,11 +89,11 @@ class Account extends Base_Controller {
         $loginType = $this->input->post('login_type') ? $this->input->post('login_type') : Common_flag::LOGIN_ACCOUNT_LOGIN_TYPE_COMMON_CONTACT_MOBILE;
         
         if($this->account_model->login_account_exists($username,$loginType)){
-            $this->response($this->response_message->get_message(), HEADER_NOT_FOUND);
+            $this->response($this->response_message->get_message(), WA_HEADER_NOT_FOUND);
         }
         else
         {
-            $this->response($this->response_message->get_message(), HEADER_SUCCESS);
+            $this->response($this->response_message->get_message(), WA_HEADER_SUCCESS);
         }
     }
     
@@ -134,7 +136,7 @@ class Account extends Base_Controller {
         
         //check login account exists
         if($this->account_model->login_account_exists($username, $login_type)){
-            $this->response($this->response_message->get_message(), HEADER_NOT_FOUND);
+            $this->response($this->response_message->get_message(), WA_HEADER_NOT_FOUND);
             return;
         }
         
@@ -150,7 +152,7 @@ class Account extends Base_Controller {
         if(!empty($email) && !$this->validate_email($email))
         {
             $this->response_message->set_message_with_code(Account_model::CODE_EMAIL_INVALID);
-            $this->response($this->response_message->get_message(), HEADER_PARAMETER_MISSING_INVALID);
+            $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
             return;
         }
         
@@ -175,7 +177,7 @@ class Account extends Base_Controller {
         if($check_data)
         {
             // if already exists
-            $this->response($this->response_message->get_message(), HEADER_NOT_FOUND);
+            $this->response($this->response_message->get_message(), WA_HEADER_NOT_FOUND);
             return;
         }
         
@@ -221,7 +223,7 @@ class Account extends Base_Controller {
         $data_result['access_token'] = $access_token;
 
         $this->response_message->set_message_with_code(Account_model::CODE_ACCOUNT_CREATED_SUCCESSFULLY, array(RESULTS => $data_result));
-        $this->response($this->response_message->get_message(), HEADER_SUCCESS);
+        $this->response($this->response_message->get_message(), WA_HEADER_SUCCESS);
         return;
     }
     
@@ -243,7 +245,7 @@ class Account extends Base_Controller {
 //         }
 //         else
 //         {
-//             $this->response($this->response_message->get_message(), HEADER_NOT_FOUND);
+//             $this->response($this->response_message->get_message(), WA_HEADER_NOT_FOUND);
 //         }
 //     }
 
@@ -261,7 +263,7 @@ class Account extends Base_Controller {
 //         }
 //         else
 //         {
-//             $this->response($this->response_message->get_message(), HEADER_NOT_FOUND);
+//             $this->response($this->response_message->get_message(), WA_HEADER_NOT_FOUND);
 //         }
 //     }
 
@@ -278,7 +280,7 @@ class Account extends Base_Controller {
 //         }
 //         else
 //         {
-//             $this->response($this->response_message->get_message(), HEADER_NOT_FOUND);
+//             $this->response($this->response_message->get_message(), WA_HEADER_NOT_FOUND);
 //         }
 //     }
 
@@ -290,7 +292,7 @@ class Account extends Base_Controller {
 //         $adminId = $this->get_profile_id();
 //         $data    = $this->account_model->is_access(self::FUNCTION_REGISTER_USER, $adminId);
 //         if (!$data) {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 
@@ -307,7 +309,7 @@ class Account extends Base_Controller {
 //         if(!$this->validate_phone($this->input->post('contact_mobile')))
 //         {
 //             $this->response_message->set_message('1001',$this->get_message(1001));
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 
@@ -315,7 +317,7 @@ class Account extends Base_Controller {
 //         if(!$this->validate_email($this->input->post('email')))
 //         {
 //             $this->response_message->set_message('1002',$this->get_message('1002'));
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 
@@ -326,14 +328,14 @@ class Account extends Base_Controller {
 //         //     if (!$this->valid_nric($this->input->post('identity_number'),$this->input->post('id_type')))
 //         //     {
 //         //         $this->response_message->set_message('1071',$this->get_message(1071));
-//         //         $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//         //         $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //         //         return;
 //         //     }
 //         // }
 
 //         if (!$this->valid_ic($this->input->post('id_type'), $this->input->post('identity_number'))) {
 //             $this->response_message->set_message('1071',$this->get_message(1071));
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 
@@ -402,7 +404,7 @@ class Account extends Base_Controller {
 //                     $check_email=$this->account_model->check_unique_email(@$this->input->post('email'));
 //                     if($check_email)
 //                     {
-//                         $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//                         $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //                         return;
 //                     }
 //                 }
@@ -411,7 +413,7 @@ class Account extends Base_Controller {
 //                     $check_mobile=$this->account_model->check_unique_mobilenumber($this->input->post('contact_mobile'));
 //                     if($check_mobile)
 //                     {
-//                         $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//                         $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //                         return;
 //                     }
 //                 }
@@ -420,7 +422,7 @@ class Account extends Base_Controller {
 //                     $check_identity=$this->account_model->check_unique_identity($this->input->post('identity_number'));
 //                     if($check_identity)
 //                     {
-//                         $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//                         $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //                         return;
 //                     }
 //                 }
@@ -530,7 +532,7 @@ class Account extends Base_Controller {
 //         $this->account_model->notification_send($params);
 
 //         $this->response_message->set_message('1005', $this->get_message(1005), array(RESULTS => $profile_id));
-//         $this->response($this->response_message->get_message(), SSC_HEADER_SUCCESS);
+//         $this->response($this->response_message->get_message(), WA_HEADER_SUCCESS);
 //         return;
 //     }
 
@@ -568,7 +570,7 @@ class Account extends Base_Controller {
 //         $data    = $this->account_model->is_access(self::FUNCTION_REGISTER_USER, $adminId);
 
 //         if (!$data) {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 
@@ -593,7 +595,7 @@ class Account extends Base_Controller {
 
 //             if (!($this->account_setting_model->check_combo_data($value, $this->input->post($key)))) {
 //                 $this->response_message->set_message(1163, $this->get_message(1163).': ' . ucwords(str_ireplace('_', ' ', $key)));
-//                 $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//                 $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //                 return;
 //             }
 //         }
@@ -610,7 +612,7 @@ class Account extends Base_Controller {
 //         if ($this->input->post('contact_mobile') && !$this->validate_phone($this->input->post('contact_mobile')))
 //         {
 //             $this->response_message->set_message('1001',$this->get_message(1001));
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 
@@ -618,14 +620,14 @@ class Account extends Base_Controller {
 //         if ($this->input->post('email') && !$this->validate_email($this->input->post('email')))
 //         {
 //             $this->response_message->set_message('1002',$this->get_message('1002'));
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 
 //         //check valid ic?
 //         if (!$this->valid_nric($this->input->post('identity_number'), $this->input->post('id_type'))) {
 //             $this->response_message->set_message('1071',$this->get_message(1071));
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 
@@ -719,7 +721,7 @@ class Account extends Base_Controller {
 
 //                     if ($check_identity)
 //                     {
-//                         $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//                         $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //                         return;
 //                     }
 //                 }
@@ -730,7 +732,7 @@ class Account extends Base_Controller {
 
 //                     if ($check_email)
 //                     {
-//                         $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//                         $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //                         return;
 //                     }
 //                 }
@@ -741,7 +743,7 @@ class Account extends Base_Controller {
 
 //                     if ($check_mobile)
 //                     {
-//                         $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//                         $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //                         return;
 //                     }
 //                 }
@@ -812,7 +814,7 @@ class Account extends Base_Controller {
 //         $result = array('name' => $this->input->post('name'), 'identity_number' => $this->input->post('contact_mobile'), 'profile_id' => $profile_id);
 
 //         $this->response_message->set_message('1005', $this->get_message(1005), array(RESULTS => $result));
-//         $this->response($this->response_message->get_message(), SSC_HEADER_SUCCESS);
+//         $this->response($this->response_message->get_message(), WA_HEADER_SUCCESS);
 //         return;
 //     }
 
@@ -853,7 +855,7 @@ class Account extends Base_Controller {
 //         $ipAddress = $this->input->ip_address();
 
 //         if(!$data) {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 
@@ -869,7 +871,7 @@ class Account extends Base_Controller {
 //         if ($this->input->post('gender')!='M' &&
 //             $this->input->post('gender')!='F') {
 //             $this->response_message->set_message(self::CODE_INVALID_GENDER,$this->get_message(self::CODE_INVALID_GENDER));
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 
@@ -885,13 +887,13 @@ class Account extends Base_Controller {
 //         // if (!$this->valid_nric($this->input->post('identity_number'),'e1_sid'))
 //         // {
 //         //     $this->response_message->set_message('1071',$this->get_message(1071));
-//         //     $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//         //     $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //         //     return;
 //         // }
 
 //         if (!$this->valid_ic('e1_sid', $this->input->post('identity_number'))) {
 //             $this->response_message->set_message('1071',$this->get_message(1071));
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 
@@ -899,14 +901,14 @@ class Account extends Base_Controller {
 
 //         if ($acc2) {
 //             $this->response_message->set_message('1016',$this->get_message('1016'));
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 
 //         //check valid email?
 //         if (!$this->validate_email($this->input->post('email'))) {
 //             $this->response_message->set_message(self::CODE_INVALID_EMAIL,$this->get_message(self::CODE_INVALID_EMAIL));
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 
@@ -914,14 +916,14 @@ class Account extends Base_Controller {
 
 //         if (@$acc) {
 //             $this->response_message->set_message('1003',$this->get_message('1003'));
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 
 //         //check valid mobile number?
 //         if (!$this->validate_phone($this->input->post('contact_mobile'))) {
 //             $this->response_message->set_message(self::CODE_INVALID_MOBILE,$this->get_message(self::CODE_INVALID_MOBILE));
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 
@@ -929,7 +931,7 @@ class Account extends Base_Controller {
 
 //         if ($acc1) {
 //             $this->response_message->set_message('1004',$this->get_message('1004'));
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 
@@ -1028,7 +1030,7 @@ class Account extends Base_Controller {
 //                     $check_email = $this->account_model->check_unique_email(@$this->input->post('email'));
 
 //                     if ($check_email) {
-//                         $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//                         $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //                         return;
 //                     }
 //                 }
@@ -1037,7 +1039,7 @@ class Account extends Base_Controller {
 //                     $check_mobile = $this->account_model->check_unique_mobilenumber($this->input->post('contact_mobile'));
 
 //                     if ($check_mobile) {
-//                         $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//                         $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //                         return;
 //                     }
 //                 }
@@ -1046,7 +1048,7 @@ class Account extends Base_Controller {
 //                     $check_identity = $this->account_model->check_unique_identity($this->input->post('identity_number'));
 
 //                     if ($check_identity) {
-//                         $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//                         $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //                         return;
 //                     }
 //                 }
@@ -1234,7 +1236,7 @@ class Account extends Base_Controller {
 //         $result=$this->account_model->get_admin_profile($profile_id);
 //         if(empty($result))
 //         {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 //         else
@@ -1255,7 +1257,7 @@ class Account extends Base_Controller {
 //         $result=$this->account_model->get_profile($this->input->get('profile_id'));
 //         if(empty($result))
 //         {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 //         else
@@ -1287,7 +1289,7 @@ class Account extends Base_Controller {
 //         $data=$this->account_model->is_access(self::FUNCTION_INITIAL_CREDIT, $adminId);
 //         if(!$data)
 //         {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 //         if($this->account_model->get_initial_credit())
@@ -1311,7 +1313,7 @@ class Account extends Base_Controller {
 //         }
 //         else
 //         {
-//             $this->response($this->response_message->get_message(), HEADER_NOT_FOUND);
+//             $this->response($this->response_message->get_message(), WA_HEADER_NOT_FOUND);
 //         }
 
 //     }
@@ -1343,7 +1345,7 @@ class Account extends Base_Controller {
 //         $data    = $this->account_model->is_access(self::FUNCTION_UPDATE_MEMBER_PROFILE, $adminId);
 
 //         if (!$data) {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 
@@ -1366,7 +1368,7 @@ class Account extends Base_Controller {
 
 //         if ($this->input->post('gender')!='M' && $this->input->post('gender')!='F') {
 //             $this->response_message->set_message(self::CODE_INVALID_GENDER,$this->get_message(self::CODE_INVALID_GENDER));
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 
@@ -1388,14 +1390,14 @@ class Account extends Base_Controller {
 //         // if (!$this->valid_nric($this->input->post('identity_number'),$this->input->post('id_type')))
 //         // {
 //         //     $this->response_message->set_message('1071',$this->get_message(1071));
-//         //     $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//         //     $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //         //     return;
 //         // }
 
 //         // special checking for admin
 //         if (!$this->valid_ic($this->input->post('id_type'), $this->input->post('identity_number'))) {
 //             $this->response_message->set_message('1071',$this->get_message(1071));
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 
@@ -1404,7 +1406,7 @@ class Account extends Base_Controller {
 //         if ($data_acc) {
 //             if($profile_id != $data_acc->profile_id) {
 //                 $this->response_message->set_message('1016',$this->get_message('1016'));
-//                 $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//                 $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //                 return;
 //             }
 //         }
@@ -1458,7 +1460,7 @@ class Account extends Base_Controller {
 //             if($check_email)
 //             {
 //                 $this->response_message->set_message('1003',$this->get_message(1003));
-//                 $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//                 $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //                 return;
 //             }
 
@@ -1474,7 +1476,7 @@ class Account extends Base_Controller {
 //             if($check_mobile)
 //             {
 //                 $this->response_message->set_message('1004',$this->get_message(1004));
-//                 $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//                 $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //                 return;
 //             }
 
@@ -1554,7 +1556,7 @@ class Account extends Base_Controller {
 //         }
 //         else
 //         {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 //     }
@@ -1566,7 +1568,7 @@ class Account extends Base_Controller {
 //         $data=$this->account_model->is_access(self::FUNCTION_ADMIN_MEMBER_SEARCH_MEMBER, $adminId);
 //         if(!$data)
 //         {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 
@@ -1592,7 +1594,7 @@ class Account extends Base_Controller {
 //         }
 //         else
 //         {
-//             $this->response($this->response_message->get_message(), HEADER_NOT_FOUND);
+//             $this->response($this->response_message->get_message(), WA_HEADER_NOT_FOUND);
 //         }
 
 //         /*$account=$this->account_model->admin_member_search($keyword,$search_type);
@@ -1602,7 +1604,7 @@ class Account extends Base_Controller {
 //         }
 //         else
 //         {
-//             $this->response($this->response_message->get_message(), HEADER_NOT_FOUND);
+//             $this->response($this->response_message->get_message(), WA_HEADER_NOT_FOUND);
 //         }*/
 //     }
 
@@ -1613,7 +1615,7 @@ class Account extends Base_Controller {
 //         $data=$this->account_model->is_access(self::FUNCTION_SUPPLEMENTARY_SEARCH, $adminId);
 //         if(!$data)
 //         {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 //         $this->is_required($this->input->get(), array('keyword','search_type'));
@@ -1630,7 +1632,7 @@ class Account extends Base_Controller {
 //         }
 //         else
 //         {
-//             $this->response($this->response_message->get_message(), HEADER_NOT_FOUND);
+//             $this->response($this->response_message->get_message(), WA_HEADER_NOT_FOUND);
 //         }
 //     }
 
@@ -1650,7 +1652,7 @@ class Account extends Base_Controller {
 //         }
 //         else
 //         {
-//             $this->response($this->response_message->get_message(), HEADER_NOT_FOUND);
+//             $this->response($this->response_message->get_message(), WA_HEADER_NOT_FOUND);
 //         }
 //     }
 
@@ -1667,7 +1669,7 @@ class Account extends Base_Controller {
 //         }
 //         else
 //         {
-//             $this->response($this->response_message->get_message(), HEADER_NOT_FOUND);
+//             $this->response($this->response_message->get_message(), WA_HEADER_NOT_FOUND);
 //         }
 //     }
 
@@ -1679,7 +1681,7 @@ class Account extends Base_Controller {
 //         $data=$this->account_model->is_access(self::FUNCTION_SUBSCRIBER_SEARCH, $adminId);
 //         if(!$data)
 //         {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 //         $this->is_required($this->input->get(), array('keyword'));
@@ -1695,7 +1697,7 @@ class Account extends Base_Controller {
 //         }
 //         else
 //         {
-//             $this->response($this->response_message->get_message(), HEADER_NOT_FOUND);
+//             $this->response($this->response_message->get_message(), WA_HEADER_NOT_FOUND);
 //         }
 //     }
 
@@ -1706,7 +1708,7 @@ class Account extends Base_Controller {
 //         $data=$this->account_model->is_access(self::FUNCTION_SUSPEND_USER_SEARCH_SUSPENSE, $adminId);
 //         if(!$data)
 //         {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 
@@ -1727,7 +1729,7 @@ class Account extends Base_Controller {
 //             }
 //             else
 //             {
-//                 $this->response($this->response_message->get_message(), HEADER_NOT_FOUND);
+//                 $this->response($this->response_message->get_message(), WA_HEADER_NOT_FOUND);
 //             }
 //         }
 //         else
@@ -1739,7 +1741,7 @@ class Account extends Base_Controller {
 //             }
 //             else
 //             {
-//                 $this->response($this->response_message->get_message(), HEADER_NOT_FOUND);
+//                 $this->response($this->response_message->get_message(), WA_HEADER_NOT_FOUND);
 //             }
 //         //}
 //     }
@@ -1751,7 +1753,7 @@ class Account extends Base_Controller {
 //         $data=$this->account_model->is_access(self::FUNCTION_REINSTATE_USER_SEARCH,$adminId);
 //         if(!$data)
 //         {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 
@@ -1772,7 +1774,7 @@ class Account extends Base_Controller {
 //             }
 //             else
 //             {
-//                 $this->response($this->response_message->get_message(), HEADER_NOT_FOUND);
+//                 $this->response($this->response_message->get_message(), WA_HEADER_NOT_FOUND);
 //             }
 //         }
 //         else
@@ -1784,7 +1786,7 @@ class Account extends Base_Controller {
 //             }
 //             else
 //             {
-//                 $this->response($this->response_message->get_message(), HEADER_NOT_FOUND);
+//                 $this->response($this->response_message->get_message(), WA_HEADER_NOT_FOUND);
 //             }
 //         //}
 //     }
@@ -1796,7 +1798,7 @@ class Account extends Base_Controller {
 //         $data=$this->account_model->is_access(self::FUNCTION_SUSPEND_LEVEL1, $adminId);
 //         if(!$data)
 //         {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 //         $this->is_required($this->input->post(), array('profile_id','suspended_reason','auto_reinstate'));
@@ -1826,7 +1828,7 @@ class Account extends Base_Controller {
 //             }
 //             else
 //             {
-//                 $this->response($this->response_message->get_message(), HEADER_NOT_FOUND);
+//                 $this->response($this->response_message->get_message(), WA_HEADER_NOT_FOUND);
 //             }
 
 //     }
@@ -1838,7 +1840,7 @@ class Account extends Base_Controller {
 //         $data=$this->account_model->is_access(self::FUNCTION_SUSPEND_LEVEL2, $adminId);
 //         if(!$data)
 //         {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 //         $this->is_required($this->input->post(), array('profile_id'));
@@ -1862,7 +1864,7 @@ class Account extends Base_Controller {
 //             }
 //             else
 //             {
-//                 $this->response($this->response_message->get_message(), HEADER_NOT_FOUND);
+//                 $this->response($this->response_message->get_message(), WA_HEADER_NOT_FOUND);
 //             }
 
 //     }
@@ -1891,7 +1893,7 @@ class Account extends Base_Controller {
 //         }
 //         else
 //         {
-//             $this->response($this->response_message->get_message(), HEADER_NOT_FOUND);
+//             $this->response($this->response_message->get_message(), WA_HEADER_NOT_FOUND);
 //         }
 
 //     }
@@ -1909,7 +1911,7 @@ class Account extends Base_Controller {
 //         }
 //         else
 //         {
-//             $this->response($this->response_message->get_message(), HEADER_NOT_FOUND);
+//             $this->response($this->response_message->get_message(), WA_HEADER_NOT_FOUND);
 //         }
 //     }
 
@@ -1930,7 +1932,7 @@ class Account extends Base_Controller {
 //             }
 //             else
 //             {
-//                 $this->response($this->response_message->get_message(), HEADER_NOT_FOUND);
+//                 $this->response($this->response_message->get_message(), WA_HEADER_NOT_FOUND);
 //             }
 
 //     }
@@ -1946,7 +1948,7 @@ class Account extends Base_Controller {
 //         }
 //         else
 //         {
-//             $this->response($this->response_message->get_message(), HEADER_NOT_FOUND);
+//             $this->response($this->response_message->get_message(), WA_HEADER_NOT_FOUND);
 //         }
 //     }
 
@@ -1957,7 +1959,7 @@ class Account extends Base_Controller {
 //         $data=$this->account_model->is_access(self::FUNCTION_TERMINATE_USER, $adminId);
 //         if(!$data)
 //         {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 //         $this->is_required($this->input->post(), array('admin_id','profile_id','blacklist_reason'));
@@ -1974,7 +1976,7 @@ class Account extends Base_Controller {
 //             }
 //             else
 //             {
-//                 $this->response($this->response_message->get_message(), HEADER_NOT_FOUND);
+//                 $this->response($this->response_message->get_message(), WA_HEADER_NOT_FOUND);
 //             }
 
 //     }
@@ -1987,7 +1989,7 @@ class Account extends Base_Controller {
 //         $data=$this->account_model->is_access(self::FUNCTION_TERMINATE_USER_SEARCH, $adminId);
 //         if(!$data)
 //         {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 //         $this->is_required($this->input->get(), array('keyword','search_type'));
@@ -2004,7 +2006,7 @@ class Account extends Base_Controller {
 //             }
 //             else
 //             {
-//                 $this->response($this->response_message->get_message(), HEADER_NOT_FOUND);
+//                 $this->response($this->response_message->get_message(), WA_HEADER_NOT_FOUND);
 //             }
 //         //}
 //     }
@@ -2029,13 +2031,13 @@ class Account extends Base_Controller {
 //                             if(!$this->validate_phone($this->input->post('contact_mobile')))
 //                             {
 //                                 $this->response_message->set_message('1001',$this->get_message(1001));
-//                                 $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//                                 $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //                                 return;
 //                             }
 //                             $acc1=$this->account_model->check_unique_mobilenumberbyid($this->input->post('contact_mobile'),$profile_id);
 //                             if($acc1)
 //                             {
-//                                 $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//                                 $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //                                 return;
 //                             }
 //                         }
@@ -2046,14 +2048,14 @@ class Account extends Base_Controller {
 //                         if(!$this->validate_email($this->input->post('email')))
 //                         {
 //                             $this->response_message->set_message('1002',$this->get_message('1002'));
-//                             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//                             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //                             return;
 //                         }
 //                         //////check email
 //                         $acc=$this->account_model->check_unique_emailbyid($this->input->post('email'),$profile_id);
 //                         if($acc)
 //                             {
-//                                 $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//                                 $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //                                 return;
 //                             }
 
@@ -2066,13 +2068,13 @@ class Account extends Base_Controller {
 //                             if(!$this->validate_phone($this->input->post('contact_mobile')))
 //                             {
 //                                 $this->response_message->set_message('1001',$this->get_message(1001));
-//                                 $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//                                 $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //                                 return;
 //                             }
 //                             $acc1=$this->account_model->check_unique_mobilenumberbyid($this->input->post('contact_mobile'),$profile_id);
 //                             if($acc1)
 //                             {
-//                                 $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//                                 $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //                                 return;
 //                             }
 
@@ -2084,7 +2086,7 @@ class Account extends Base_Controller {
 //                              if(!$this->input->post('email'))
 //                              {
 //                                 $this->response_message->set_message('1014',$this->get_message(1014));
-//                                 $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//                                 $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //                                 return;
 //                              }
 //                          }
@@ -2093,7 +2095,7 @@ class Account extends Base_Controller {
 //                              if(!$this->input->post('contact_mobile'))
 //                              {
 //                                 $this->response_message->set_message('1006',$this->get_message(1006));
-//                                 $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//                                 $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //                                 return;
 //                              }
 //                         }
@@ -2137,7 +2139,7 @@ class Account extends Base_Controller {
 //         else
 //         {
 //             $this->response_message->set_message(self::CODE_MEMBER_NOT_FOUND,$this->get_message(self::CODE_MEMBER_NOT_FOUND));
-//             $this->response($this->response_message->get_message(), HEADER_NOT_FOUND);
+//             $this->response($this->response_message->get_message(), WA_HEADER_NOT_FOUND);
 //             return;
 //         }
 
@@ -2189,7 +2191,7 @@ class Account extends Base_Controller {
 //                 $result=$this -> account_model -> change_member_role($this->input->post('profile_id'),$data);
 //                 if(empty($result))
 //                 {
-//                     $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//                     $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //                     return;
 //                 }
 //                 else
@@ -2217,7 +2219,7 @@ class Account extends Base_Controller {
 //             else
 //             {
 //                 $this->response_message->set_message(self::CODE_MEMBER_NOT_FOUND,$this->get_message(self::CODE_MEMBER_NOT_FOUND));
-//                 $this->response($this->response_message->get_message(), HEADER_NOT_FOUND);
+//                 $this->response($this->response_message->get_message(), WA_HEADER_NOT_FOUND);
 //                 return;
 //             }
 //         }
@@ -2247,7 +2249,7 @@ class Account extends Base_Controller {
 //                 $result=$this -> account_model -> change_member_role($this->input->post('profile_id'),$data);
 //                 if(empty($result))
 //                 {
-//                     $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//                     $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //                     return;
 //                 }
 //                 else
@@ -2275,7 +2277,7 @@ class Account extends Base_Controller {
 //             else
 //             {
 //                 $this->response_message->set_message(self::CODE_MEMBER_NOT_FOUND,$this->get_message(self::CODE_MEMBER_NOT_FOUND));
-//                 $this->response($this->response_message->get_message(), HEADER_NOT_FOUND);
+//                 $this->response($this->response_message->get_message(), WA_HEADER_NOT_FOUND);
 //                 return;
 //             }
 //         }
@@ -2291,7 +2293,7 @@ class Account extends Base_Controller {
 //         $data=$this->account_model->is_access(self::FUNCTION_ACTIVITY_LISTING, $adminId);
 //         if(!$data)
 //         {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 
@@ -2304,7 +2306,7 @@ class Account extends Base_Controller {
 //         $result=$this->account_model->activity_listing_by_profile_id($this->input->post('profile_id'));
 //         if(empty($result))
 //         {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 //         else
@@ -2324,7 +2326,7 @@ class Account extends Base_Controller {
 //         $adminId = $this->get_profile_id();
 //         $result = $this->account_model->get_paymentmodes();
 //         if (empty($result)) {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //         } else {
 //             $this->response($this->response_message->get_message());
 //         }
@@ -2334,7 +2336,7 @@ class Account extends Base_Controller {
 //         $adminId = $this->get_profile_id();
 //         $data = $this->account_model->is_access(self::FUNCTION_ACTIVITY_LISTING, $adminId);
 //         if (!$data) {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 //         if (!$this->input->get('profile_id')) {
@@ -2355,7 +2357,7 @@ class Account extends Base_Controller {
 //         ///get profile data
 //         $result = $this->account_model->member_transaction_history($profile_id, $sys_code_ids, $payment_mode_ids, $date_from, $date_to,$page, $limit);
 //         if (empty($result)) {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         } else {
 //             $this->response($this->response_message->get_message());
@@ -2371,7 +2373,7 @@ class Account extends Base_Controller {
 //         ///get ewallet data
 //         $result = $this->account_model->ewallet_listing_grant($organization_id, $include_grant);
 //         if (empty($result)) {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         } else {
 //             $this->response($this->response_message->get_message());
@@ -2383,7 +2385,7 @@ class Account extends Base_Controller {
 //         $adminId = $this->get_profile_id();
 // //        $data = $this->account_model->is_access(self::FUNCTION_ACTIVITY_LISTING, $adminId);
 // //        if (!$data) {
-// //            $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+// //            $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 // //            return;
 // //        }
 //         $org_id = $this->input->get('org_id') ? $this->input->get('org_id') : NULL;
@@ -2398,7 +2400,7 @@ class Account extends Base_Controller {
 //         ///get profile data
 //         $result = $this->account_model->org_transaction_history($org_id, $profile_id, $payment_mode_ids, $date_from, $date_to,$page, $limit);
 //         if (empty($result)) {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         } else {
 //             $this->response($this->response_message->get_message());
@@ -2428,7 +2430,7 @@ class Account extends Base_Controller {
 //         $result=$this->account_model->activity_detail($this->input->post('invoice_id'));
 //         if(empty($result))
 //         {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 //         else
@@ -2523,7 +2525,7 @@ class Account extends Base_Controller {
 //                         if(!$this->validate_phone($this->input->post('contact_mobile')))
 //                         {
 //                             $this->response_message->set_message('1001',$this->get_message(1001));
-//                             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//                             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //                             return;
 //                         }
 //                      }
@@ -2534,7 +2536,7 @@ class Account extends Base_Controller {
 //                         if(!$this->validate_email($this->input->post('email')))
 //                         {
 //                             $this->response_message->set_message('1002',$this->get_message('1002'));
-//                             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//                             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //                             return;
 //                         }
 //                      }
@@ -2549,7 +2551,7 @@ class Account extends Base_Controller {
 //                         if(!$this->validate_password($this->input->post('password')))
 //                         {
 //                             $this->response_message->set_message('1015',$this->get_message(1015));
-//                             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//                             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //                             return;
 //                         }
 //                      }
@@ -2562,7 +2564,7 @@ class Account extends Base_Controller {
 //                         if($this->input->post('password')!=$this->input->post('retype_password'))
 //                         {
 //                             $this->response_message->set_message('1017',$this->get_message(1017));
-//                             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//                             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //                             return;
 //                         }
 //                      }
@@ -2589,7 +2591,7 @@ class Account extends Base_Controller {
 //                             if (!$this->valid_nric($this->input->post('identity_number'),$this->input->post('id_type')))
 //                             {
 //                                 $this->response_message->set_message('1071',$this->get_message(1071));
-//                                 $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//                                 $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //                                 return;
 //                             }
 //                         }
@@ -2604,7 +2606,7 @@ class Account extends Base_Controller {
 //                              if(!$this->input->post('email'))
 //                              {
 //                                 $this->response_message->set_message('1014',$this->get_message(1014));
-//                                 $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//                                 $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //                                 return;
 //                              }
 //                          }
@@ -2613,7 +2615,7 @@ class Account extends Base_Controller {
 //                              if(!$this->input->post('contact_mobile'))
 //                              {
 //                                 $this->response_message->set_message('1006',$this->get_message(1006));
-//                                 $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//                                 $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //                                 return;
 //                              }
 //                         }
@@ -2659,7 +2661,7 @@ class Account extends Base_Controller {
 //                                 if($check_email)
 //                                 {
 //                                     $this->response_message->set_message('1003',$this->get_message(1003));
-//                                     $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//                                     $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //                                     return;
 //                                 }
 //                             }
@@ -2669,7 +2671,7 @@ class Account extends Base_Controller {
 //                                 if($check_mobile)
 //                                 {
 //                                     $this->response_message->set_message('1004',$this->get_message(1004));
-//                                     $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//                                     $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //                                     return;
 //                                 }
 //                             }
@@ -2679,7 +2681,7 @@ class Account extends Base_Controller {
 //                                 if($check_identity)
 //                                 {
 //                                     $this->response_message->set_message('1016',$this->get_message(1016));
-//                                     $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//                                     $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //                                     return;
 //                                 }
 //                             }
@@ -2872,7 +2874,7 @@ class Account extends Base_Controller {
 
 //             default:
 //                 $this->response_message->set_message('1019',$this->get_message(1019));
-//                 $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//                 $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //                 return;
 //                 break;
 //         }
@@ -2904,7 +2906,7 @@ class Account extends Base_Controller {
 //         $result=$this->account_model-> _subscriber_listingby_venue($this->input->post('venue_id'));
 //         if(empty($result))
 //         {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 //         else
@@ -2921,7 +2923,7 @@ class Account extends Base_Controller {
 //         $result=$this->account_model->participants_listing($this->input->post('organization_id'));
 //         if(empty($result))
 //         {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 //         else
@@ -2946,7 +2948,7 @@ class Account extends Base_Controller {
 //         $result=$this->account_model->condition_group_listing();
 //         if(empty($result))
 //         {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 //         else
@@ -2963,7 +2965,7 @@ class Account extends Base_Controller {
 //         $result=$this->account_model->condition_code_listing($this->input->get('condition_group_code'));
 //         if(empty($result))
 //         {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 //         else
@@ -2979,7 +2981,7 @@ class Account extends Base_Controller {
 //         $result=$this->account_model->role_listing();
 //         if(empty($result))
 //         {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 //         else
@@ -2998,7 +3000,7 @@ class Account extends Base_Controller {
 
 //         if(empty($result))
 //         {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 //         else
@@ -3065,7 +3067,7 @@ class Account extends Base_Controller {
 //         $result=$this->account_model->create_add_on($data_b,$this->input->post('role_id'),@$this->input->post('condition_group'),@$this->input->post('condition_code'),$admin);
 //         if(empty($result))
 //         {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 //         else
@@ -3081,14 +3083,14 @@ class Account extends Base_Controller {
 //         $data=$this->account_model->is_access(self::FUNCTION_ADDON_LISTING, $adminId);
 //         if(!$data)
 //         {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 //         $pagination = $this->get_pagination();
 //         $result=$this->account_model->add_on_listing($pagination[PAGE], $pagination[LIMIT]);
 //         if(empty($result))
 //         {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 //         else
@@ -3176,7 +3178,7 @@ class Account extends Base_Controller {
 //         $result=$this->account_model->update_add_on($this->input->post('id'),$data_b,$this->input->post('role_id'),$this->input->post('condition_group'),$this->input->post('condition_code'),$admin);
 //         if(empty($result))
 //         {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 //         else
@@ -3192,7 +3194,7 @@ class Account extends Base_Controller {
 //         $result=$this->account_model->add_on_detail($this->input->post('id'));
 //         if(empty($result))
 //         {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 //         else
@@ -3208,7 +3210,7 @@ class Account extends Base_Controller {
 //         $result=$this->account_model->add_on_delete($this->input->post('id'));
 //         if(empty($result))
 //         {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 //         else
@@ -3226,7 +3228,7 @@ class Account extends Base_Controller {
 //         $result=$this->account_model->join_add_on($this->input->post('profile_id'),$this->input->post('add_on_type'),$admin);
 //         if(empty($result))
 //         {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 //         else
@@ -3246,7 +3248,7 @@ class Account extends Base_Controller {
 
 //         if(empty($result))
 //         {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 //         else
@@ -3262,7 +3264,7 @@ class Account extends Base_Controller {
 //         $data=$this->account_model->is_access(self::FUNCTION_ACCOUNT_ADDON_SEARCH, $adminId);
 //         if(!$data)
 //         {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 //         $this->is_required($this->input->get(), array('keyword','search_type'));
@@ -3279,7 +3281,7 @@ class Account extends Base_Controller {
 //             }
 //             else
 //             {
-//                 $this->response($this->response_message->get_message(), HEADER_NOT_FOUND);
+//                 $this->response($this->response_message->get_message(), WA_HEADER_NOT_FOUND);
 //             }
 //     }
 
@@ -3295,7 +3297,7 @@ class Account extends Base_Controller {
 //         $result=$this->account_model->platform_listing();
 //         if(empty($result))
 //         {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 //         else
@@ -3314,7 +3316,7 @@ class Account extends Base_Controller {
 //         $data=$this->account_model->is_access(self::FUNCTION_RELATED_LISTING, $adminId);
 //         if(!$data)
 //         {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 //         //$this->require_account();
@@ -3326,7 +3328,7 @@ class Account extends Base_Controller {
 //         $result=$this->account_model->related_account_listing($profile_id,$pagination[PAGE], $pagination[LIMIT]);
 //         if(empty($result))
 //         {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 //         else
@@ -3350,7 +3352,7 @@ class Account extends Base_Controller {
 //         $result=$this->account_model->booking_listing($profile_id,$pagination[PAGE], $pagination[LIMIT]);
 //         if(empty($result))
 //         {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 //         else
@@ -3373,7 +3375,7 @@ class Account extends Base_Controller {
 //         $result=$this->account_model->get_address_by_postalcode($this->input->post('postal_code'));
 //         if(empty($result))
 //         {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 //         else
@@ -3390,7 +3392,7 @@ class Account extends Base_Controller {
 //             $data=$this->account_model->is_access($this->input->post('function_code'), $adminId);
 //             if(!$data)
 //             {
-//                 $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//                 $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //                 return;
 //             }
 //             else
@@ -3423,7 +3425,7 @@ class Account extends Base_Controller {
 //         $result=$this->account_model->create_admin_user($data);
 //         if(empty($result))
 //         {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 //         else
@@ -3445,7 +3447,7 @@ class Account extends Base_Controller {
 //             return;
 //         }
 //         else{
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 //     }
@@ -3456,7 +3458,7 @@ class Account extends Base_Controller {
 //         $result=$this->account_model->all_role_listing();
 //         if(empty($result))
 //         {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 //         else
@@ -3478,7 +3480,7 @@ class Account extends Base_Controller {
 //         $result=$this->account_model->organization_ewallet_topup($adminId,$this->input->post('organization_id'),$this->input->post('item_id'),$this->input->post('item_name'),$this->input->post('origin_price'),$lat,$long,$this->input->post('profile_id'));
 //         if(empty($result))
 //         {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 //         else
@@ -3496,7 +3498,7 @@ class Account extends Base_Controller {
 //         $result=$this->account_model->shoppingcart_detail($this->input->post('shopping_card_id'));
 //         if(empty($result))
 //         {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 //         else
@@ -3520,7 +3522,7 @@ class Account extends Base_Controller {
 //         if($this->account_model->checkout($profileId, $shoppingCartId, $payment_code,$amount,@$this->input->post('ewallet_passcode'),@$this->input->post('transaction_id'))){
 //             $this->response( $this->response_message->get_message());
 //         }else{
-//             $this->response( $this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID); //TODO
+//             $this->response( $this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID); //TODO
 //         }
 //     }*/
 
@@ -3539,7 +3541,7 @@ class Account extends Base_Controller {
 //         $result=$this->account_model->checkout($ipAddress,$this->input->post('shopping_cart_id'),$paymentList,$org_id,$adminId,$this->input->post('profile_id'),$this->input->post('venue_id'));
 //         if(empty($result))
 //         {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 //         else
@@ -3565,7 +3567,7 @@ class Account extends Base_Controller {
 //         $result=$this->account_model->shoppingcart_checkout($ipAddress,$this->input->post('shopping_card_id'),$paymentList,$this->input->post('organisation_id'),$adminId,$this->input->post('profile_id'));
 //         if(empty($result))
 //         {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 //         else
@@ -3594,7 +3596,7 @@ class Account extends Base_Controller {
 //         }
 //         else
 //         {
-//             $this->response($this->response_message->get_message(), HEADER_NOT_FOUND);
+//             $this->response($this->response_message->get_message(), WA_HEADER_NOT_FOUND);
 //         }
 
 //     }
@@ -3608,7 +3610,7 @@ class Account extends Base_Controller {
 //         $result=$this->account_model->suspend_user_history($pagination[PAGE], $pagination[LIMIT]);
 //         if(empty($result))
 //         {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 //         else
@@ -3631,7 +3633,7 @@ class Account extends Base_Controller {
 //         $result=$this->account_model->ewallet_listing($organization_id);
 //         if(empty($result))
 //         {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 //         else
@@ -3654,7 +3656,7 @@ class Account extends Base_Controller {
 //         $result=$this->account_model->individual_ewallet_listing($profile_id);
 //         if(empty($result))
 //         {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 //         else
@@ -3677,7 +3679,7 @@ class Account extends Base_Controller {
 //         }
 //         else
 //         {
-//             $this->response($this->response_message->get_message(), HEADER_NOT_FOUND);
+//             $this->response($this->response_message->get_message(), WA_HEADER_NOT_FOUND);
 //         }
 //     }
 
@@ -3691,7 +3693,7 @@ class Account extends Base_Controller {
 //         }
 //         else
 //         {
-//             $this->response($this->response_message->get_message(), HEADER_NOT_FOUND);
+//             $this->response($this->response_message->get_message(), WA_HEADER_NOT_FOUND);
 //         }
 //     }
 
@@ -3718,7 +3720,7 @@ class Account extends Base_Controller {
 //         // if (!$this->valid_nric($this->input->post('nric')))
 //         // {
 //         //     $this->response_message->set_message('1071',$this->get_message(1071));
-//         //     $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//         //     $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //         //     return;
 //         // }
 
@@ -3726,7 +3728,7 @@ class Account extends Base_Controller {
 //         if ($this->input->post('gender')!='M' &&
 //             $this->input->post('gender')!='F') {
 //             $this->response_message->set_message(self::CODE_INVALID_GENDER,$this->get_message(self::CODE_INVALID_GENDER));
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 
@@ -3742,34 +3744,34 @@ class Account extends Base_Controller {
 //         //check valid email?
 //         if (!$this->validate_email($this->input->post('email'))) {
 //             $this->response_message->set_message('1002',$this->get_message('1002'));
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 
 //         $check_email = $this->account_model->check_unique_email(@$this->input->post('email'));
 
 //         if ($check_email) {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 
 //         //check valid mobile number?
 //         if (!$this->validate_phone($this->input->post('contact_mobile'))) {
 //             $this->response_message->set_message('1001',$this->get_message(1001));
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 
 //         $check_mobile = $this->account_model->check_unique_mobilenumber($this->input->post('contact_mobile'));
 
 //         if ($check_mobile) {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 
 //         if (!$this->valid_ic('e1_sid', $this->input->post('nric'))) {
 //             $this->response_message->set_message('1071',$this->get_message(1071));
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 
@@ -3778,7 +3780,7 @@ class Account extends Base_Controller {
 
 //         if ($check_identity) {
 //             $this->response_message->set_message('1016',$this->get_message(1016));
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 
@@ -3960,7 +3962,7 @@ class Account extends Base_Controller {
 //         $result=$this->account_model->account_add_on_listing($this->input->post('profile_id'));
 //         if(empty($result))
 //         {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 //         else
@@ -3978,7 +3980,7 @@ class Account extends Base_Controller {
 //         $result=$this->account_model->account_add_on_listing_pos($this->input->post('profile_id'));
 //         if(empty($result))
 //         {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 //         else
@@ -4004,7 +4006,7 @@ class Account extends Base_Controller {
 //         $result=$this->account_model->add_on_shopping_cart($this->input->post('profile_id'),$this->input->post('benefit_id'),$lat,$long,$adminId);
 //         if(empty($result))
 //         {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 //         else
@@ -4025,7 +4027,7 @@ class Account extends Base_Controller {
 //         $result=$this->account_model->terminate_user_detail($this->input->get('profile_id'));
 //         if(empty($result))
 //         {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 //         else
@@ -4041,7 +4043,7 @@ class Account extends Base_Controller {
 //                     $data=$this->account_model->is_access(self::FUNCTION_REGISTER_USER, $adminId);
 //                     if(!$data)
 //                     {
-//                         $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//                         $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //                         return;
 //                     }
 //                     //////s3 config
@@ -4080,7 +4082,7 @@ class Account extends Base_Controller {
 //                         if(!$this->validate_phone($this->input->post('contact_mobile')))
 //                         {
 //                             $this->response_message->set_message('1001',$this->get_message(1001));
-//                             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//                             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //                             return;
 //                         }
 //                      }
@@ -4095,7 +4097,7 @@ class Account extends Base_Controller {
 //                         if(!$this->validate_email($this->input->post('email')))
 //                         {
 //                             $this->response_message->set_message('1002',$this->get_message('1002'));
-//                             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//                             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //                             return;
 //                         }
 //                      }
@@ -4114,7 +4116,7 @@ class Account extends Base_Controller {
 //                             if (!$this->valid_nric($this->input->post('identity_number'),$this->input->post('id_type')))
 //                             {
 //                                 $this->response_message->set_message('1071',$this->get_message(1071));
-//                                 $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//                                 $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //                                 return;
 //                             }
 //                         }
@@ -4173,7 +4175,7 @@ class Account extends Base_Controller {
 //                                 $check_email=$this->account_model->check_unique_email(@$this->input->post('email'));
 //                                 if($check_email)
 //                                 {
-//                                     $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//                                     $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //                                     return;
 //                                 }
 //                             }
@@ -4182,7 +4184,7 @@ class Account extends Base_Controller {
 //                                 $check_mobile=$this->account_model->check_unique_mobilenumber($this->input->post('contact_mobile'));
 //                                 if($check_mobile)
 //                                 {
-//                                     $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//                                     $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //                                     return;
 //                                 }
 //                             }
@@ -4191,7 +4193,7 @@ class Account extends Base_Controller {
 //                                 $check_identity=$this->account_model->check_unique_identity($this->input->post('identity_number'));
 //                                 if($check_identity)
 //                                 {
-//                                     $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//                                     $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //                                     return;
 //                                 }
 //                             }
@@ -4429,7 +4431,7 @@ class Account extends Base_Controller {
 //         // $data=$this->account_model->is_access(self::FUNCTION_REGISTER_USER, $adminId);
 //         // if(!$data)
 //         // {
-//         //     $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//         //     $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //         //     return;
 //         // }
 
@@ -4468,7 +4470,7 @@ class Account extends Base_Controller {
 
 //         if(empty($result))
 //         {
-//             $this->response($this->response_message->get_message(), SSC_HEADER_PARAMETER_MISSING_INVALID);
+//             $this->response($this->response_message->get_message(), WA_HEADER_PARAMETER_MISSING_INVALID);
 //             return;
 //         }
 //         else

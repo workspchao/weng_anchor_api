@@ -89,14 +89,13 @@ defined('EXIT__AUTO_MAX')      OR define('EXIT__AUTO_MAX', 125); // highest auto
 // API HTTP STATUS CODES
 define('X_AUTHORIZATION', 'X-authorization');
 
-define('HEADER_SUCCESS', 200); // when the request is successful
+define('WA_HEADER_SUCCESS', 200); // when the request is successful
 
-define('HEADER_PARAMETER_MISSING_INVALID', 400); // when required params are invalid or missing
-define('HEADER_UNAUTHORIZED', 401); // when the provided authentication details doesnt have access to a resource
-define('HEADER_FORBIDDEN', 403); // when authentication details not provided to access resource
-define('HEADER_NOT_FOUND', 404); // when resource is not found
-
-define('HEADER_INTERNAL_SERVER_ERROR', 500); // when something unexpected happened on the server
+define('WA_HEADER_PARAMETER_MISSING_INVALID', 400); // when required params are invalid or missing
+define('WA_HEADER_UNAUTHORIZED', 401); // when the provided authentication details doesnt have access to a resource
+define('WA_HEADER_FORBIDDEN', 403); // when authentication details not provided to access resource
+define('WA_HEADER_NOT_FOUND', 404); // when resource is not found
+define('WA_HEADER_INTERNAL_SERVER_ERROR', 500); // when something unexpected happened on the server
 
 define('MESSAGE_CODE_SUFFIX','code_');
 

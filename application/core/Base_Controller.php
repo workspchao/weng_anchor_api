@@ -10,24 +10,21 @@ use JohnLui\AliyunOSS\AliyunOSS;
 // use Config;
 
 class Base_Controller extends CI_Controller {
-    
+
 //    protected $lang = "";
+    
+    private $login_account;
 
     public function __construct() {
         parent::__construct();
-        
-        $language = $this->input->post('lang');
-        if(empty($language))
-            $language = 1;
-        
-        if($language == 1){
-            $this->lang->load('common_message','chinese');
-        }
-        else if($language == 2){
-            $this->lang->load('common_message','english');
-        }
-        else{
-            $this->lang->load('common_message','chinese');
+
+        $language = $this->get_language();
+        if ($language == 1) {
+            $this->lang->load('common_message', 'chinese');
+        } else if ($language == 2) {
+            $this->lang->load('common_message', 'english');
+        } else {
+            $this->lang->load('common_message', 'chinese');
         }
         $this->response_message->set_lang($this->lang);
     }
@@ -41,7 +38,7 @@ class Base_Controller extends CI_Controller {
         json_decode($string);
         return (json_last_error() == JSON_ERROR_NONE);
     }
-    
+
 //    protected function get_lang(){
 //        $lang = $this->input->get(LANG);
 //        if(empty($lang))
@@ -51,16 +48,24 @@ class Base_Controller extends CI_Controller {
 //        return $lang;
 //    }
 
-    private function _get_limit() {
-        $limit = $this->input->get(LIMIT) ? $this->input->get('limit') : DEFAULT_LIMIT;
+    protected function get_language() {
+        $language = $this->input->get(LANG) ? $this->input->get(LANG) : ($this->input->post(LANG) ? $this->input->post(LANG) : DEFAULT_LANG);
+        if (!isset($language) || empty($language))
+            $language = DEFAULT_LANG;
+
+        return $language;
+    }
+
+    protected function get_limit() {
+        $limit = $this->input->get(LIMIT) ? $this->input->get(LIMIT) : ($this->input->post(LIMIT) ? $this->input->post(LIMIT) : DEFAULT_LIMIT);
         if ($limit > MAX_LIMIT)
             $limit = DEFAULT_LIMIT;
 
         return $limit;
     }
 
-    private function _get_page() {
-        $page = $this->input->get(PAGE) ? $this->input->get('page') : DEFAULT_PAGE;
+    protected function get_page() {
+        $page = $this->input->get(PAGE) ? $this->input->get(PAGE) :  ($this->input->post(PAGE) ? $this->input->post(PAGE) : DEFAULT_PAGE);
         if ($page <= 0)
             $page = DEFAULT_PAGE;
 
@@ -80,8 +85,8 @@ class Base_Controller extends CI_Controller {
      * @return array with keys: limit, offset, page
      */
     protected function get_pagination() {
-        $page = $this->_get_page();
-        $limit = $this->_get_limit();
+        $page = $this->get_page();
+        $limit = $this->get_limit();
         $pagination = $this->_get_simple_pagination($page, $limit);
 
         return $pagination;
@@ -102,9 +107,9 @@ class Base_Controller extends CI_Controller {
         if ($image_type != 'image/jpeg' && $image_type != 'image/png' && $image_type != 'image/jpg') {
             header("Content-Type: application/json");
             header("Cache-Control: no-store");
-            header("HTTP/1.1 " . SSC_HEADER_PARAMETER_MISSING_INVALID);
+            header("HTTP/1.1 " . WA_HEADER_PARAMETER_MISSING_INVALID);
 
-            echo json_encode(array(STATUS_CODE => SSC_HEADER_PARAMETER_MISSING_INVALID, MESSAGE => IMAGE_TYPE_ERROR));
+            echo json_encode(array(STATUS_CODE => WA_HEADER_PARAMETER_MISSING_INVALID, MESSAGE => IMAGE_TYPE_ERROR));
             die();
         }
 
@@ -117,9 +122,9 @@ class Base_Controller extends CI_Controller {
         if (filesize($_FILES[$var]["tmp_name"]) > 3145728) {
             header("Content-Type: application/json");
             header("Cache-Control: no-store");
-            header("HTTP/1.1 " . SSC_HEADER_PARAMETER_MISSING_INVALID);
+            header("HTTP/1.1 " . WA_HEADER_PARAMETER_MISSING_INVALID);
 
-            echo json_encode(array(STATUS_CODE => SSC_HEADER_PARAMETER_MISSING_INVALID, MESSAGE => IMAGE_SIZE_ERROR));
+            echo json_encode(array(STATUS_CODE => WA_HEADER_PARAMETER_MISSING_INVALID, MESSAGE => IMAGE_SIZE_ERROR));
             die();
         }
 
@@ -136,12 +141,11 @@ class Base_Controller extends CI_Controller {
         //SG phone number
         if (strlen($phone) == 8 && is_numeric($phone)) {
             return true;
-        } 
-        //CN phone number
-        else if(strlen($phone) == 11 && is_numeric($phone) && preg_match("/1[34578]{1}\d{9}$/",$phone)){
-            return true;
         }
-        else {
+        //CN phone number
+        else if (strlen($phone) == 11 && is_numeric($phone) && preg_match("/1[34578]{1}\d{9}$/", $phone)) {
+            return true;
+        } else {
             return false;
         }
     }
@@ -182,11 +186,10 @@ class Base_Controller extends CI_Controller {
         }
     }
 
-    
     public function get_now() {
         return date('Y-m-d H:i:s');
     }
-    
+
     // // check dob for activeSG
     // public function valid_dob_activeSG($dob) {
     //    $_age = floor( (strtotime(date('Y-m-d')) - strtotime($dob)) / 31556926);
@@ -336,19 +339,19 @@ class Base_Controller extends CI_Controller {
     protected function invalid_params($paramName = NULL) {
         header("Content-Type: application/json");
         header("Cache-Control: no-store");
-        header("HTTP/1.1 " . HEADER_NOT_FOUND);
+        header("HTTP/1.1 " . WA_HEADER_NOT_FOUND);
         // Output json and die
-        echo json_encode(array('status_code' => HEADER_NOT_FOUND, 'message' => $paramName ? "Invalid or missing parameters: $paramName" : "Invalid or missing parameters."));
+        echo json_encode(array('status_code' => WA_HEADER_NOT_FOUND, 'message' => $paramName ? "Invalid or missing parameters: $paramName" : "Invalid or missing parameters."));
         die;
     }
 
     protected function result_not_found($paramName = "Result") {
         header("Content-Type: application/json");
         header("Cache-Control: no-store");
-        header("HTTP/1.1 " . HEADER_NOT_FOUND);
+        header("HTTP/1.1 " . WA_HEADER_NOT_FOUND);
 
         // Output json and die
-        echo json_encode(array('status_code' => HEADER_NOT_FOUND, 'message' => "$paramName not found"));
+        echo json_encode(array('status_code' => WA_HEADER_NOT_FOUND, 'message' => "$paramName not found"));
         die;
     }
 
@@ -418,9 +421,9 @@ class Base_Controller extends CI_Controller {
     //     {
     //         header("Content-Type: application/json");
     //         header("Cache-Control: no-store");
-    //         header("HTTP/1.1 ". SSC_HEADER_PARAMETER_MISSING_INVALID);
+    //         header("HTTP/1.1 ". WA_HEADER_PARAMETER_MISSING_INVALID);
     //         // Output json and die                                  
-    //         echo json_encode(array('status_code'=>SSC_HEADER_PARAMETER_MISSING_INVALID,'message' => 'Invalid oauth client credentials.'));  
+    //         echo json_encode(array('status_code'=>WA_HEADER_PARAMETER_MISSING_INVALID,'message' => 'Invalid oauth client credentials.'));  
     //         die;  
     //     }
     // }
@@ -434,71 +437,75 @@ class Base_Controller extends CI_Controller {
     //     if (empty($data)) {
     //         header("Content-Type: application/json");
     //         header("Cache-Control: no-store");
-    //         header("HTTP/1.1 " . SSC_HEADER_FORBIDDEN);
+    //         header("HTTP/1.1 " . WA_HEADER_FORBIDDEN);
     //         // Output json and die
-    //         echo json_encode(array('status_code' => SSC_HEADER_FORBIDDEN, 'message' => 'Invalid oauth token credentials.'));
+    //         echo json_encode(array('status_code' => WA_HEADER_FORBIDDEN, 'message' => 'Invalid oauth token credentials.'));
     //         die ;
     //     }
     // }
-    // /**
-    //  * @return Array with profile_id and access_token: the new access token
-    //  */
-    // protected function get_profile_id_and_token(){
-    //     $accessToken = $this -> input -> get_request_header(X_AUTHORIZATION);
-    //     $this -> load -> model('account/account_model');
-    //     $data = $this -> account_model -> get_profileid_by_accesstoken($accessToken);
-    //     //$access_token   =   $this->account_model->generate_token();
-    //     if($data){
-    //         //$editData=array();
-    //         //$editData['access_token']=$access_token;
-    //         /**
-    //          * This should be called from model, not controller since it's depending on whether this API will need to rotate access token
-    //          */
-    //         // $this->account_model->common_edit('access_token','account_id',$data->id,$editData);
-    //        $token_date=$this->account_model->get_accesstoken_updated_at($accessToken);
-    //         if($token_date)
-    //         {
-    //             $created_at=@$token_date->created_at;
-    //             $updated_at=@$token_date->updated_at;
-    //             if($updated_at)
-    //             {
-    //                 $d_date=$updated_at;
-    //             }
-    //             else
-    //             {
-    //                 $d_date=$created_at;
-    //             }
-    //             $today = date("Y-m-d H:i:s");
-    //             $d_date = date('Y-m-d H:i:s', strtotime($d_date . " +20 minutes"));
-    //             if(strtotime($d_date)<strtotime($today))
-    //             {
-    //                 header("Content-Type: application/json");
-    //                 header("Cache-Control: no-store");
-    //                 header("HTTP/1.1 " . SSC_HEADER_FORBIDDEN);
-    //                 // Output json and die
-    //                 echo json_encode(array('status_code' => SSC_HEADER_FORBIDDEN, 'message' => 'Invalid oauth token credentials.'));
-    //                 die ;
-    //             }
-    //             else
-    //             {
-    //                 $editData=array();
-    //                 $editData['updated_at']=date("Y-m-d H:i:s");
-    //                 $this->account_model->common_edit('ssc_member.access_token','account_id',$data->id,$editData);     
-    //             }
-    //         }
-    //         $result=array();
-    //         $result['profile_id']=$data->profile_id;
-    //         $result['access_token']=$accessToken;
-    //         return $result;
-    //     }else{
-    //         header("Content-Type: application/json");
-    //         header("Cache-Control: no-store");
-    //         header("HTTP/1.1 " . SSC_HEADER_FORBIDDEN);
-    //         // Output json and die
-    //         echo json_encode(array('status_code' => SSC_HEADER_FORBIDDEN, 'message' => 'Invalid oauth token credentials.'));
-    //         die ;
-    //     }
-    // }
+    /**
+     * @return Array with profile_id and access_token: the new access token
+     */
+    protected function get_profile_id_and_token() {
+        $accessToken = $this->input->get_request_header(X_AUTHORIZATION);
+        $this->load->model('account/account_model');
+        $login_account = $this->account_model->get_profileid_by_accesstoken($accessToken);
+        if ($login_account) {
+            $token_date = $this->account_model->get_accesstoken_updated_at($accessToken);
+            if ($token_date) {
+                $created_at = @$token_date->created_at;
+                $updated_at = @$token_date->updated_at;
+                if ($updated_at) {
+                    $d_date = $updated_at;
+                } else {
+                    $d_date = $created_at;
+                }
+                $today = date("Y-m-d H:i:s");
+                $d_date = date('Y-m-d H:i:s', strtotime($d_date . " +20 minutes"));
+                if (strtotime($d_date) < strtotime($today)) {
+                    header("Content-Type: application/json");
+                    header("Cache-Control: no-store");
+                    header("HTTP/1.1 " . WA_HEADER_FORBIDDEN);
+                    // Output json and die
+                    echo json_encode(array('status_code' => WA_HEADER_FORBIDDEN, 'message' => 'Invalid oauth token credentials.'));
+                    die;
+                } else {
+                    $editData = array();
+                    $editData['updated_at'] = date("Y-m-d H:i:s");
+                    $this->account_model->common_edit('wa.access_token', 'account_id', $login_account->id, $editData);
+                }
+            }
+            
+            $result = array();
+            $result['uid'] = $login_account->uid;
+            $result['access_token'] = $accessToken;
+            return $result;
+//            return json_encode($result);
+        } else {
+            header("Content-Type: application/json");
+            header("Cache-Control: no-store");
+            header("HTTP/1.1 " . WA_HEADER_FORBIDDEN);
+            // Output json and die
+            echo json_encode(array('status_code' => WA_HEADER_FORBIDDEN, 'message' => 'Invalid oauth token credentials.'));
+            die;
+        }
+    }
+    
+    protected function get_loing_account()
+    {
+        $login_account = $this->get_profile_id_and_token();
+        return $login_account;
+    }
+    
+    protected function get_profile_id()
+    {
+        $login_account = $this->get_loing_account();
+        if($login_account && isset($login_account['uid']))
+            return $login_account['uid'];
+        else
+            return 0;
+    }
+
     // /**
     //  * Get the profile id value
     //  */
@@ -543,18 +550,17 @@ class Base_Controller extends CI_Controller {
      * @param String $string
      * @return Array
      */
-    protected function _convert_to_array($string) {
+    protected function _convert_to_array($string, $splitChar = ',') {
         if ($string === NULL) {
             return array();
         }
-        $array = explode(',', $string);
+        $array = explode($splitChar, $string);
         foreach ($array as $key => $value) {
-            if (empty($array[$key])) {
+            if (empty($array[$key]) && $array[$key] !== '0') {
                 unset($array[$key]);
             }
         }
         $array = array_values($array);
-
         return $array;
     }
 
@@ -593,8 +599,8 @@ class Base_Controller extends CI_Controller {
     protected function invalid_params_with_message($message) {
         header("Content-Type: application/json");
         header("Cache-Control: no-store");
-        header("HTTP/1.1 " . HEADER_NOT_FOUND);
-        echo json_encode(array('status_code' => HEADER_NOT_FOUND, 'message' => $message));
+        header("HTTP/1.1 " . WA_HEADER_NOT_FOUND);
+        echo json_encode(array('status_code' => WA_HEADER_NOT_FOUND, 'message' => $message));
         die;
     }
 

@@ -20,6 +20,8 @@ class Account_model extends Base_Common_Model {
     const CODE_LOGIN_SUCCESS                    = 1010;
     const CODE_USERNAME_INVALID                 = 1021;
     const CODE_PASSWORD_INVALID                 = 1022;
+    
+    const CODE_INVALID_TOKEN                    = 1028;
 
 //    const CODE_PASSWORD_EXPIRED = 1508;
 //    const CODE_USER_NOT_FOUND   = 1020;
@@ -42,7 +44,6 @@ class Account_model extends Base_Common_Model {
 //    const CODE_SWITCH_ACCOUNT   = 1038;
 //    const CODE_EXCEED_AGE   = 1039;
 //    const CODE_MEMBER_CONVERSION  = 1040;
-//    const CODE_INVALID_TOKEN   = 1028;
 //    const CODE_MEMBER_UPDATE   = 1041;
 //    const CODE_MEMBER_DELETE   = 1042;
 //    const CODE_MEMBER_SUSPEND   = 1045;
@@ -310,17 +311,18 @@ class Account_model extends Base_Common_Model {
                 $account_id = $this->common_add('wa.access_token', $data);
             }
 
-            $data_acc = $this->get_all_accountid_by_user($result->uid);
-
-            if ($data_acc) {
-                foreach ($data_acc as $row_cer) {
-                    $a_id = $row_cer['id'];
-                    $this->common_edit('wa.access_token', 'account_id', $a_id, $data_result);
-                }
-            } else {
-                $this->common_edit('wa.access_token', 'account_id', $result->login_account_id, $data_result);
-            }
-
+//            //SSO LOGIN
+//            $data_acc = $this->get_all_accountid_by_user($result->uid);
+//            if ($data_acc) {
+//                foreach ($data_acc as $row_cer) {
+//                    $a_id = $row_cer['id'];
+//                    $this->common_edit('wa.access_token', 'account_id', $a_id, $data_result);
+//                }
+//            } else {
+//                $this->common_edit('wa.access_token', 'account_id', $result->login_account_id, $data_result);
+//            }
+            
+            $this->common_edit('wa.access_token', 'account_id', $result->login_account_id, $data_result);
 
             $accessToken = $access_token;
 
@@ -337,8 +339,9 @@ class Account_model extends Base_Common_Model {
         }
     }
 
-    public function admin_login($username, $password) {
-        return $this->_login($username, $password, true);
+    public function admin_login($username, $password, $loginType) {
+        
+        return $this->_login($username, $password, true, $loginType);
     }
 
     public function user_login($username, $password, $login_type) {
@@ -1396,25 +1399,30 @@ class Account_model extends Base_Common_Model {
 //        }
 //    }
 //
-//    public function get_profileid_by_accesstoken($access_token) {
-//
-//        $this->db->select('u.profile_id,u.id');
-//        $this->db->from('ssc_member.access_token l');
-//        $this->db->join('ssc_member.login_account u', 'u.id = l.account_id');
-//
-//        $this->db->where('l.access_token', $access_token);
-//        $this->db->where('l.deleted_at is NULL');
-//        $this->db->where('u.deleted_at is NULL');
-//
-//        $query = $this->db->get();
-//        if ($query->num_rows() > 0) {
-//            return $query->row();
-//        } else {
-//            $message = $this->common_config_model->get_message(self::CODE_INVALID_TOKEN);
-//            $this->response_message->set_message(self::CODE_INVALID_TOKEN, $message);
-//            return FALSE;
-//        }
-//    }
+    public function get_profileid_by_accesstoken($access_token) {
+
+        $this->db->select('l.uid,l.id');
+        $this->db->from('wa.access_token AS a');
+        $this->db->join('wa.login_account AS l', 'l.id = a.account_id');
+        
+        if($access_token == null)
+            $this->db->where('1=2');
+        else
+            $this->db->where('a.access_token', $access_token);
+        
+        $this->db->where('a.deleted_at is NULL');
+        $this->db->where('l.deleted_at is NULL');
+        $this->db->limit(1);
+
+        $query = $this->db->get();
+        
+        if ($query->num_rows() > 0) {
+            return $query->row();
+        } else {
+            $this->response_message->set_message_with_code(self::CODE_INVALID_TOKEN);
+            return FALSE;
+        }
+    }
 //
 //    public function get_acccountid($user_name, $profile_id) {
 //        $this->db->select('id');
@@ -5580,24 +5588,33 @@ class Account_model extends Base_Common_Model {
 //        }
 //    }
 //
-//    /**
-//     * Get updated date for access token
-//     * @author Wai Tun
-//     * @since 9 FEB 2014
-//     */
-//    public function get_accesstoken_updated_at($accessToken) {
-//        $this->db->select('updated_at,created_at');
-//        $this->db->from('ssc_member.access_token');
-//        $this->db->where('access_token', $accessToken);
-//        $this->db->where('deleted_at is NULL');
-//
-//        $query = $this->db->get();
-//        if ($query->num_rows() > 0) {
-//            return $query->row();
-//        } else {
-//            return false;
-//        }
-//    }
+    
+    /**
+     * Get updated date for access token
+     * @author Wai Tun
+     * @since 9 FEB 2014
+     */
+    public function get_accesstoken_updated_at($accessToken) {
+        $this->db->select('updated_at,created_at');
+        $this->db->from('wa.access_token');
+        if($accessToken == null){
+            $this->db->where('1=2');
+        }
+        else
+        {
+            $this->db->where('access_token', $accessToken);
+        }
+        $this->db->where('deleted_at is NULL');
+        $this->db->limit(1);
+
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            return $query->row();
+        } else {
+            return false;
+        }
+    }
+    
 //
 //    public function get_name($profile_id) {
 //        $this->db->select('name');

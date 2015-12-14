@@ -60,7 +60,7 @@ class Base_Common_Model extends Base_Model {
         $this->db->set('uid', $userId);
         $this->db->set('ip_address', $ipAddress);
         $this->db->set('action', $action);
-        $this->db->set('created_at', date('Y-m-d H:i:s'));
+        $this->db->set('created_at', $this->get_now());
         $this->db->set('flag', $accountId);
 
         $this->db->insert('wa.common_log');
@@ -72,10 +72,37 @@ class Base_Common_Model extends Base_Model {
     }
 
     public function common_edit($tableName, $key, $value, $data) {
-        $data['updated_at'] = date("Y-m-d H:i:s");
+        $data['updated_at'] = $this->get_now();
         $this->db->where($key, $value);
         if ($this->db->update($tableName, $data)) {
             return $this->db->affected_rows();
+        } else {
+            return FALSE;
+        }
+    }
+    
+    public function common_edit_with_multiKey($tableName, $keyArr, $data) {
+        $data['updated_at'] = $this->get_now();
+        foreach ($keyArr as $key => $value) {
+            $this->db->where($key, $value);
+        }
+        if ($this->db->update($tableName, $data)) {
+            return $this->db->affected_rows();
+        } else {
+            return FALSE;
+        }
+    }
+    
+    public function common_exists_with_multiKey($tableName, $keyArr)
+    {
+        $this->db->select('count(*) as count');
+        $this->db->from($tableName);
+        foreach ($keyArr as $key => $value) {
+            $this->db->where($key, $value);
+        }
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            return TRUE;
         } else {
             return FALSE;
         }
