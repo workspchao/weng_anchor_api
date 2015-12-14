@@ -1,0 +1,14 @@
+RewriteEngine On
+
+RewriteBase /
+
+RewriteCond %{REQUEST_FILENAME} !-f
+
+RewriteCond %{REQUEST_FILENAME} !-d
+
+RewriteRule ^(.*)$ index.php/$1 [L]
+
+
+#RewriteEngine on
+#RewriteCond $1 !^(index.php|assets|kindeditor|uploads|\.txt)
+#RewriteRule ^(en|de|cn)/(.*)$ index.php?$2lang=$1&%{query_STRING} [L]
