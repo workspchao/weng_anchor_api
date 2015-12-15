@@ -240,7 +240,7 @@ class Account_model extends Base_Common_Model {
     
     /* ************************************************************************************************** */
     
-    private function _login($username, $password, $isAdmin, $login_type = Common_flag::LOGIN_ACCOUNT_LOGIN_TYPE_COMMON_CONTACT_MOBILE) {
+    private function _login($username, $password, $isAdmin = false, $login_type = Common_flag::LOGIN_ACCOUNT_LOGIN_TYPE_COMMON_CONTACT_MOBILE) {
         
         // security in place
         $username = $this->mmsencrypt->hash($username.$login_type);
@@ -330,6 +330,8 @@ class Account_model extends Base_Common_Model {
             $results['token'] = $access_token;
             $results['name'] = $result->name;
             $results['mebership_id'] = $result->mebership_id;
+            if($isAdmin)
+                $results['is_admin'] = $isAdmin;
 
             $this->response_message->set_message_with_code(self::CODE_LOGIN_SUCCESS, array(RESULTS => $results));
             return TRUE;

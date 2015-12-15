@@ -72,7 +72,7 @@ class Product_type extends Base_Controller {
         $lang = $this->get_language();
         $id = $this->input->post('id') ? $this->input->post('id') : null;
         
-        if($this->Product_category_model->categoryDetail($lang, $id)){
+        if($this->Product_type_model->getDetail($lang, $id)){
             $this->response($this->response_message->get_message());
         }
         else{

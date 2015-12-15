@@ -68,7 +68,6 @@ class Product_type_model extends Base_Common_Model {
     }
 
     public function create($lang, $name, $desc, $icon_url, $sort, $createdBy, $langList) {
-//        var_dump($name,$desc,$parentId,$langList);exit();
 
         $data = array();
         $data['name'] = $name;
@@ -81,7 +80,6 @@ class Product_type_model extends Base_Common_Model {
         $id = $this->common_add('wa.product_type', $data);
 
         foreach ($langList as $key => $value) {
-//            var_dump($value->lang);
             $data_lang = array();
             $data_lang['id'] = $id;
             $data_lang['lang'] = $value->lang;
@@ -117,7 +115,7 @@ class Product_type_model extends Base_Common_Model {
 
         $query = $this->db->get();
         if ($query->num_rows() > 0) {
-            $results['category'] = $query->result();
+            $results['type'] = $query->row();
 
             $this->db->select('product_type_lang.`lang`,
                             product_type_lang.`name`,
@@ -127,7 +125,7 @@ class Product_type_model extends Base_Common_Model {
 
             $query = $this->db->get();
             if ($query->num_rows() > 0) {
-                $results['categroy_lang'] = $query->result();
+                $results['type_lang'] = $query->result();
             }
 
             $this->response_message->set_message_with_code(self::CODE_PRODUCT_TYPE_DETAIL_SUCCESSFULLY, array(RESULTS => $results));
