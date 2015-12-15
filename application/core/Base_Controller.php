@@ -10,13 +10,16 @@ use JohnLui\AliyunOSS\AliyunOSS;
 // use Config;
 
 class Base_Controller extends CI_Controller {
-
-//    protected $lang = "";
     
-    private $login_account;
+    private $ServerAddress;
+    private $AccessKeyId;
+    private $AccessKeySecret;
+    private $BUCKET;
 
     public function __construct() {
         parent::__construct();
+        
+        $this->load->helper('string');
 
         $language = $this->get_language();
         if ($language == 1) {
@@ -27,6 +30,12 @@ class Base_Controller extends CI_Controller {
             $this->lang->load('common_message', 'chinese');
         }
         $this->response_message->set_lang($this->lang);
+        
+        $this->config->load('oss_config');
+        $this->ServerAddress = $this->config->item('ServerAddressInternal') ? $this->config->item('ServerAddressInternal') : $this->config->item('ServerAddress');
+        $this->AccessKeyId = $this->config->item('AccessKeyId');
+        $this->AccessKeySecret = $this->config->item('AccessKeySecret');
+        $this->BUCKET = $this->config->item('BUCKET');
     }
 
     // Output formats
@@ -38,7 +47,24 @@ class Base_Controller extends CI_Controller {
         json_decode($string);
         return (json_last_error() == JSON_ERROR_NONE);
     }
+    
+    
+    /**
+     *   Generate random number
+     */
+    public function generate_random_number($length) {
+        $digits = '';
+        $numbers = range(0, 9);
 
+        shuffle($numbers);
+
+        for ($i = 0; $i < $length; $i++) {
+            $digits .= $numbers[$i];
+        }
+
+        return $digits;
+    }
+    
 //    protected function get_lang(){
 //        $lang = $this->input->get(LANG);
 //        if(empty($lang))
@@ -189,6 +215,13 @@ class Base_Controller extends CI_Controller {
     public function get_now() {
         return date('Y-m-d H:i:s');
     }
+    
+    public function get_millisecond()
+    {
+        $time = explode ( " ", microtime () );
+        $millisecond = ceil($time[0] * 1000);
+        return $millisecond;
+    }
 
     // // check dob for activeSG
     // public function valid_dob_activeSG($dob) {
@@ -322,7 +355,17 @@ class Base_Controller extends CI_Controller {
             if (!isset($param[$value])) {
                 $this->invalid_params($value);
             } else {
-                $val = trim($param[$value]);
+                $val = $param[$value];
+                if(is_array($val))
+                {
+                    if(count($val) <= 0)
+                        $this->invalid_params($value);
+                }
+                else
+                {
+                    $val = trim($val);
+                }
+                
                 if (is_null($val)) {
                     $this->invalid_params($value);
                 }
@@ -443,6 +486,7 @@ class Base_Controller extends CI_Controller {
     //         die ;
     //     }
     // }
+    
     /**
      * @return Array with profile_id and access_token: the new access token
      */
@@ -603,7 +647,146 @@ class Base_Controller extends CI_Controller {
         echo json_encode(array('status_code' => WA_HEADER_NOT_FOUND, 'message' => $message));
         die;
     }
+    
+    
+    private function _ci_upload($fileParamsName, $newName, $uploadPath = './upload/', $allowedTypes = 'gif|jpg|png', $maxSize = 10240, &$error = '')
+    {
+        // Load file uploading library
+        $this->upload = new CI_Upload(array(
+            'file_name' => $newName,
+            'overwrite' => true,
+            'upload_path' => $uploadPath,
+            'allowed_types' => $allowedTypes,
+            'max_size' => $maxSize // kilobytes
+        ));
 
+        // Try uploading
+        if (!$this->upload->do_upload($fileParamsName)) {
+            $error = $this->upload->error_msg;
+            return false;
+        } else {
+            // File original path from local server
+            $src = $uploadPath . $newName;
+            return $src;
+        }
+    }
+    
+    private function _oss_upload($srcPath, $newName, $folder = 'upload/')
+    {
+        try {
+            $ossKey = $folder . $newName;
+            if(!$this->oss_image->upload($ossKey, $srcPath))
+                return $ossKey;
+            return false;
+        } catch (Exception $ex) {
+            return false;
+        }
+    }
+    
+    protected function upload_file($field, $newName, $uploadPath, $allowedTypes, $maxSize, $oss_folder)
+    {
+        if (isset($_FILES[$field])) 
+        {
+            if(!isset($newName) || $newName === null || empty($newName) || $newName == '')
+            {
+                $newName = date('YmdHis_') . $this->get_millisecond();
+            }
+            
+            $fullName = $_FILES[$field]['name'];
+            $extName = strtolower(end(explode(".", $fullName)));
+            $newName = $newName . '.' . $extName;
+            
+            $ci_result = $this->_ci_upload($field, $newName, $uploadPath, $allowedTypes, $maxSize);
+            if($ci_result === false)
+            {
+                return false;
+            }
+            
+            //#debug code begin# 
+            if(LOCAL_TEST)
+                return $ci_result;
+            //#debug code end# 
+            
+            $oss_result = $this->_oss_upload($ci_result, $newName, $oss_folder);
+            if(!$oss_result)
+            {
+                return false;
+            }
+
+            try
+            {
+                if (file_exists($filepath))
+                {
+                    unlink($filepath);
+                }
+            }
+            catch(Exception $ex)
+            {
+                log_message('error', $ex);
+            }
+            return $oss_result;
+        }
+        return false;
+    }
+    
+    protected function upload_image($field, $newName, $uploadPath = './upload/images/', $allowedTypes = 'gif|jpg|png', $maxSize = 10240, $oss_folder = 'upload/images/')
+    {
+        return $this->upload_file($field, $newName, $uploadPath, $allowedTypes, $maxSize, $oss_folder);
+    }
+    
+    /*
+    protected function upload_image($fileParamsName, $newName)
+    {
+        $allowedTypes = 'jpg|png|gif|jpeg|PNG';
+        $targetFolder = 'images/';
+        $maxSize = 10240;
+        
+        $this->upload_file($fileParamsName, $newName, null, $targetFolder, $allowedTypes, $maxSize);
+    }
+    
+    private function ci_upload($fileParamsName, $newName, $uploadPath, $allowedTypes, $maxSize, &$error = '') {
+        
+    }
+
+    public function upload_file($field, $folder = '', $newFileName = '') {
+        $error = '';
+        $ci_result = $this->ci_upload($field, $newFileName, $uploadPath, $allowedTypes, $maxSize, $error);
+        if (!$ci_result) {
+            return false;
+        }
+        
+        
+        
+        
+        $ci_result = $this->ci_upload($fileParamsName, $newName, $uploadPath, $allowedTypes, $maxSize, $error);
+        if(!ci_result)
+        {
+            return false;
+        }
+        
+        $this->oss_upload($ci_result, $newName, $targetFolder);
+    }
+    
+    private function oss_upload($srcPath, $newFileName, $targetFolder = 'files/')
+    {
+        $this->ossClient = AliyunOSS::boot(
+            $this->ServerAddress,
+            $this->AccessKeyId,
+            $this->AccessKeySecret
+        );
+        
+        // $filePath = '/WebSite/Distribution/API/uploads/o/011768c9aa5686308805a9eada872a2e.jpg';
+        // $ossKey = 'shop/o/011768c9aa5686308805a9eada872a2e.jpg';
+        
+        $ossKey = $targetFolder . $newFileName;
+        
+        $this->ossClient->setBucket(self::BUCKET);
+        $this->ossClient->uploadFile($ossKey, $srcPath);
+        
+        return $ossKey;
+    }
+    */
+    
 }
 
 /* End of file Base_Controller.php */

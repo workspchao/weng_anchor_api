@@ -78,7 +78,6 @@ class Product_category_model extends Base_Common_Model {
     }
 
     public function categoryCreate($lang, $name, $desc, $parentId, $sort, $createdBy, $langList) {
-//        var_dump($name,$desc,$parentId,$langList);exit();
 
         $data_category = array();
         $data_category['name'] = $name;
@@ -99,7 +98,6 @@ class Product_category_model extends Base_Common_Model {
         }
 
         foreach ($langList as $key => $value) {
-//            var_dump($value->lang);
             $data_category_lang = array();
             $data_category_lang['id'] = $id;
             $data_category_lang['lang'] = $value->lang;
