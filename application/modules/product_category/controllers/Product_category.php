@@ -109,6 +109,10 @@ class Product_category extends Base_Controller {
             return;
         }
         
+        $icon_url = null;
+        if(isset($_FILES['icon']))
+            $icon_url = $this->upload_image ('icon', null);
+        
         if($parent_id == null)
         {
             $parent_id = 0;
