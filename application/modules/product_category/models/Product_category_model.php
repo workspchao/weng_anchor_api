@@ -54,9 +54,15 @@ class Product_category_model extends Base_Common_Model {
         $this->db->join('wa.product_category_lang', 'product_category_lang.id = product_category.id');
         $this->db->where('product_category_lang.lang', $lang);
         $this->db->where('product_category.deleted_at IS NULL');
-        if (!empty($parent_id)) {
+        
+        if ($parent_id === null || $parent_id === '' || $parent_id === 0) {
+            $this->db->where('product_category.parent_id', 0);
+        }
+        else{
             $this->db->where('product_category.parent_id', $parent_id);
         }
+        
+        $this->db->order_by('product_category.sort', ASC);
         $this->db->limit($limit, $offset);
 
         $query = $this->db->get();
@@ -71,7 +77,7 @@ class Product_category_model extends Base_Common_Model {
         return false;
     }
 
-    public function categoryCreate($lang, $name, $desc, $parentId, $createdBy, $langList) {
+    public function categoryCreate($lang, $name, $desc, $parentId, $sort, $createdBy, $langList) {
 //        var_dump($name,$desc,$parentId,$langList);exit();
 
         $data_category = array();
@@ -79,16 +85,17 @@ class Product_category_model extends Base_Common_Model {
         $data_category['desc'] = $desc;
         $data_category['is_parent'] = 0;
         $data_category['parent_id'] = $parentId;
+        $data_category['sort'] = $sort;
         $data_category['created_at'] = $this->get_now();
         $data_category['created_by'] = $createdBy;
 
         $id = $this->common_add('wa.product_category', $data_category);
 
         if ($parentId) {
-            $data_category = Array();
+            $data_category = array();
             $data_category['is_parent'] = Common_flag::FLAG_YES_TINYINT;
 
-            $this->common_edit('wa.product_category', 'id', $parentId, $data);
+            $this->common_edit('wa.product_category', 'id', $parentId, $data_category);
         }
 
         foreach ($langList as $key => $value) {
@@ -151,12 +158,13 @@ class Product_category_model extends Base_Common_Model {
         return false;
     }
 
-    public function categoryUpdate($lang, $id, $name, $desc, $parentId, $updatedBy, $langList) {
+    public function categoryUpdate($lang, $id, $name, $desc, $parentId, $sort, $updatedBy, $langList) {
         $data_category = array();
 //        $data_category['id'] = $id;
         $data_category['name'] = $name;
         $data_category['desc'] = $desc;
         $data_category['parent_id'] = $parentId;
+        $data_category['sort'] = $sort;
         $data_category['updated_by'] = $updatedBy;
 
         $affected_rows = $this->common_edit('wa.product_category', 'id', $id, $data_category);
@@ -165,7 +173,7 @@ class Product_category_model extends Base_Common_Model {
             $data_category = Array();
             $data_category['is_parent'] = Common_flag::FLAG_YES_TINYINT;
 
-            $this->common_edit('wa.product_category', 'id', $parentId, $data);
+            $this->common_edit('wa.product_category', 'id', $parentId, $data_category);
         }
 
         foreach ($langList as $key => $value) {

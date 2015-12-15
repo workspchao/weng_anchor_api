@@ -48,6 +48,7 @@ class Product_category extends Base_Controller {
         $name = $this->input->post('name') ? $this->input->post('name') : null;
         $desc = $this->input->post('desc') ? $this->input->post('desc') : null;
         $parent_id = $this->input->post('parent_id') ? $this->input->post('parent_id') : null;
+        $sort = $this->input->post('sort') ? $this->input->post('sort') : null;
         $lang_list = $this->input->post('lang_list') ? $this->input->post('lang_list') : null;
         $created_by = $this->get_profile_id();
         
@@ -62,7 +63,7 @@ class Product_category extends Base_Controller {
             $parent_id = 0;
         }
         
-        if($this->Product_category_model->categoryCreate($lang, $name, $desc, $parent_id, $created_by, $lang_list)){
+        if($this->Product_category_model->categoryCreate($lang, $name, $desc, $parent_id, $sort, $created_by, $lang_list)){
             $this->response($this->response_message->get_message());
         }
         else{
@@ -94,6 +95,7 @@ class Product_category extends Base_Controller {
         $name = $this->input->post('name') ? $this->input->post('name') : null;
         $desc = $this->input->post('desc') ? $this->input->post('desc') : null;
         $parent_id = $this->input->post('parent_id') ? $this->input->post('parent_id') : null;
+        $sort = $this->input->post('sort') ? $this->input->post('sort') : null;
         $lang_list = $this->input->post('lang_list') ? $this->input->post('lang_list') : null;
         $updated_by = $this->get_profile_id();
         
