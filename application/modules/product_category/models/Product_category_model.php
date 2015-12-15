@@ -53,7 +53,6 @@ class Product_category_model extends Base_Common_Model {
         $this->db->from('wa.product_category');
         $this->db->join('wa.product_category_lang', 'product_category_lang.id = product_category.id');
         $this->db->where('product_category_lang.lang', $lang);
-        $this->db->where('product_category_lang.deleted_at IS NULL');
         $this->db->where('product_category.deleted_at IS NULL');
         if (!empty($parent_id)) {
             $this->db->where('product_category.parent_id', $parent_id);
@@ -138,7 +137,6 @@ class Product_category_model extends Base_Common_Model {
                             product_category_lang.`desc`');
             $this->db->from('wa.product_category_lang');
             $this->db->where('product_category_lang.id', $id);
-            $this->db->where('product_category_lang.deleted_at IS NULL');
 
             $query = $this->db->get();
             if ($query->num_rows() > 0) {
