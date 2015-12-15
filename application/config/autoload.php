@@ -58,7 +58,7 @@ $autoload['packages'] = array();
 |
 |	$autoload['libraries'] = array('user_agent' => 'ua');
 */
-$autoload['libraries'] = array('MMSEncrypt', 'response_message');
+$autoload['libraries'] = array('MMSEncrypt', 'response_message', 'upload', 'Oss_Image');
 
 /*
 | -------------------------------------------------------------------
