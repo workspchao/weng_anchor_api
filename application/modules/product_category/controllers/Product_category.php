@@ -58,12 +58,16 @@ class Product_category extends Base_Controller {
             return;
         }
         
+        $icon_url = null;
+        if(isset($_FILES['icon']))
+            $icon_url = $this->upload_image ('icon', null);
+        
         if($parent_id == null)
         {
             $parent_id = 0;
         }
         
-        if($this->Product_category_model->categoryCreate($lang, $name, $desc, $parent_id, $sort, $created_by, $lang_list)){
+        if($this->Product_category_model->categoryCreate($lang, $name, $desc, $parent_id, $sort, $icon_url, $created_by, $lang_list)){
             $this->response($this->response_message->get_message());
         }
         else{
@@ -110,7 +114,7 @@ class Product_category extends Base_Controller {
             $parent_id = 0;
         }
         
-        if($this->Product_category_model->categoryUpdate($lang, $id, $name, $desc, $parent_id, $updated_by, $lang_list)){
+        if($this->Product_category_model->categoryUpdate($lang, $id, $name, $desc, $parent_id, $sort, $icon_url, $updated_by, $lang_list)){
             $this->response($this->response_message->get_message());
         }
         else{

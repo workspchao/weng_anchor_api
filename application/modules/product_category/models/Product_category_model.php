@@ -77,7 +77,7 @@ class Product_category_model extends Base_Common_Model {
         return false;
     }
 
-    public function categoryCreate($lang, $name, $desc, $parentId, $sort, $createdBy, $langList) {
+    public function categoryCreate($lang, $name, $desc, $parentId, $sort, $icon_url, $createdBy, $langList) {
 
         $data_category = array();
         $data_category['name'] = $name;
@@ -85,6 +85,7 @@ class Product_category_model extends Base_Common_Model {
         $data_category['is_parent'] = 0;
         $data_category['parent_id'] = $parentId;
         $data_category['sort'] = $sort;
+        $data_category['icon_url'] = $icon_url;
         $data_category['created_at'] = $this->get_now();
         $data_category['created_by'] = $createdBy;
 
@@ -156,19 +157,21 @@ class Product_category_model extends Base_Common_Model {
         return false;
     }
 
-    public function categoryUpdate($lang, $id, $name, $desc, $parentId, $sort, $updatedBy, $langList) {
+    public function categoryUpdate($lang, $id, $name, $desc, $parentId, $sort, $icon_url, $updatedBy, $langList) {
+        
         $data_category = array();
-//        $data_category['id'] = $id;
         $data_category['name'] = $name;
         $data_category['desc'] = $desc;
         $data_category['parent_id'] = $parentId;
         $data_category['sort'] = $sort;
+        if(isset($icon_url) && $icon_url != null)
+            $data_category['icon_url'] = $icon_url;
         $data_category['updated_by'] = $updatedBy;
 
         $affected_rows = $this->common_edit('wa.product_category', 'id', $id, $data_category);
 
         if ($parentId) {
-            $data_category = Array();
+            $data_category = array();
             $data_category['is_parent'] = Common_flag::FLAG_YES_TINYINT;
 
             $this->common_edit('wa.product_category', 'id', $parentId, $data_category);
