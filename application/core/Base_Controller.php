@@ -675,10 +675,14 @@ class Base_Controller extends CI_Controller {
     {
         try {
             $ossKey = $folder . $newName;
-            if(!$this->oss_image->upload($ossKey, $srcPath))
+            $oss_result = $this->oss_image->upload($ossKey, $srcPath);
+            if($oss_result !== false)
+            {
                 return $ossKey;
+            }
             return false;
         } catch (Exception $ex) {
+            log_message('error', $ex);
             return false;
         }
     }
@@ -708,7 +712,7 @@ class Base_Controller extends CI_Controller {
 //            //#debug code end# 
             
             $oss_result = $this->_oss_upload($ci_result, $newName, $oss_folder);
-            if(!$oss_result)
+            if($oss_result === false)
             {
                 return false;
             }

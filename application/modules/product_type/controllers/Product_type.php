@@ -89,7 +89,6 @@ class Product_type extends Base_Controller {
         $name = $this->input->post('name') ? $this->input->post('name') : null;
         $desc = $this->input->post('desc') ? $this->input->post('desc') : null;
         $sort = $this->input->post('sort') ? $this->input->post('sort') : null;
-        $icon_url = null;
         
         $lang_list = $this->input->post('lang_list') ? $this->input->post('lang_list') : null;
         $updated_by = $this->get_profile_id();
@@ -100,10 +99,11 @@ class Product_type extends Base_Controller {
             return;
         }
         
+        $icon_url = null;
         if(isset($_FILES['icon']))
             $icon_url = $this->upload_image('icon', null);
         
-        if($this->Product_type_model->update($lang, $id, $name, $desc, $icon_url, $updated_by, $lang_list)){
+        if($this->Product_type_model->update($lang, $id, $name, $desc, $icon_url, $sort, $updated_by, $lang_list)){
             $this->response($this->response_message->get_message());
         }
         else{
@@ -111,14 +111,14 @@ class Product_type extends Base_Controller {
         }
     }
     
-    public function categoryDelete()
+    public function delete()
     {
         $this->is_required($this->input->post(), array('id'));
         
         $lang = $this->get_language();
         $id = $this->input->post('id') ? $this->input->post('id') : null;
         
-        if($this->Product_category_model->categoryDelete($id)){
+        if($this->Product_type_model->delete($id)){
             $this->response($this->response_message->get_message());
         }
         else{
