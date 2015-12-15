@@ -137,7 +137,7 @@ class Product_category_model extends Base_Common_Model {
 
         $query = $this->db->get();
         if ($query->num_rows() > 0) {
-            $results['category'] = $query->result();
+            $results['category'] = $query->row();
 
             $this->db->select('product_category_lang.`lang`,
                             product_category_lang.`name`,
