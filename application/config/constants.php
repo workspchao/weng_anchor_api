@@ -113,6 +113,9 @@ define('OFFSET', "offset");
 define('DEFAULT_LANG', 1);
 define('LANG', 'lang');
 
+define('ASC', "ASC");
+define('DESC', "DESC");
+
 define('ELASTICACHE_EXPIRY_ONE_MINUTE', 60);
 define('ELASTICACHE_EXPIRY_ONE_HOUR', 3600);
 define('ELASTICACHE_EXPIRY_ONE_DAY', 86400);
