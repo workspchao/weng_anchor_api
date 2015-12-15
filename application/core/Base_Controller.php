@@ -702,10 +702,10 @@ class Base_Controller extends CI_Controller {
                 return false;
             }
             
-            //#debug code begin# 
-            if(LOCAL_TEST)
-                return $ci_result;
-            //#debug code end# 
+//            //#debug code begin# 
+//            if(LOCAL_TEST)
+//                return $ci_result;
+//            //#debug code end# 
             
             $oss_result = $this->_oss_upload($ci_result, $newName, $oss_folder);
             if(!$oss_result)
