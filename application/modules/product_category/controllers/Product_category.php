@@ -45,11 +45,19 @@ class Product_category extends Base_Controller {
         $this->is_required($this->input->post(), array('name', 'desc', 'parent_id', 'lang_list'), false);
         
         $lang = $this->get_language();
-        $name = $this->input->post('name') ? $this->input->post('name') : null;
-        $desc = $this->input->post('desc') ? $this->input->post('desc') : null;
-        $parent_id = $this->input->post('parent_id') ? $this->input->post('parent_id') : null;
-        $sort = $this->input->post('sort') ? $this->input->post('sort') : null;
-        $lang_list = $this->input->post('lang_list') ? $this->input->post('lang_list') : null;
+        
+        $name = $this->input->post('name');
+        $desc = $this->input->post('desc');
+        $parent_id = $this->input->post('parent_id');
+        $sort = $this->input->post('sort');
+        $lang_list = $this->input->post('lang_list');
+        
+        $name = !empty($name) ? $name : null;
+        $desc = !empty($desc) ? $desc : null;
+        $parent_id = !empty($parent_id) ? $parent_id : 0;
+        $sort = !empty($sort) ? $sort : 0;
+        $lang_list = !empty($lang_list) ? $lang_list : null;
+        
         $created_by = $this->get_profile_id();
         
         $lang_list = json_decode($lang_list);
@@ -95,12 +103,21 @@ class Product_category extends Base_Controller {
         $this->is_required($this->input->post(), array('id', 'name', 'desc', 'parent_id', 'lang_list'), false);
         
         $lang = $this->get_language();
-        $id = $this->input->post('id') ? $this->input->post('id') : null;
-        $name = $this->input->post('name') ? $this->input->post('name') : null;
-        $desc = $this->input->post('desc') ? $this->input->post('desc') : null;
-        $parent_id = $this->input->post('parent_id') ? $this->input->post('parent_id') : null;
-        $sort = $this->input->post('sort') ? $this->input->post('sort') : null;
-        $lang_list = $this->input->post('lang_list') ? $this->input->post('lang_list') : null;
+        
+        $id = $this->input->post('id');
+        $name = $this->input->post('name');
+        $desc = $this->input->post('desc');
+        $parent_id = $this->input->post('parent_id');
+        $sort = $this->input->post('sort');
+        $lang_list = $this->input->post('lang_list');
+        
+        $id = !empty($id) ? $id : null;
+        $name = !empty($name) ? $name : null;
+        $desc = !empty($desc) ? $desc : null;
+        $parent_id = !empty($parent_id) ? $parent_id : 0;
+        $sort = !empty($sort) ? $sort : 0;
+        $lang_list = !empty($lang_list) ? $lang_list : null;
+        
         $updated_by = $this->get_profile_id();
         
         $lang_list = json_decode($lang_list);
@@ -131,7 +148,8 @@ class Product_category extends Base_Controller {
         $this->is_required($this->input->post(), array('id'));
         
         $lang = $this->get_language();
-        $id = $this->input->post('id') ? $this->input->post('id') : null;
+        $id = $this->input->post('id');
+        $id = !empty($id) ? $id : null;
         
         if($this->Product_category_model->categoryDelete($id)){
             $this->response($this->response_message->get_message());
