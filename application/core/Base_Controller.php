@@ -697,7 +697,9 @@ class Base_Controller extends CI_Controller {
             }
             
             $fullName = $_FILES[$field]['name'];
+            $this->dump('fullName' . $fullName);
             $extName = end(explode(".", $fullName));
+            $this->dump($extName);
             $extName = strtolower($extName);
             $newName = $newName . '.' . $extName;
             
