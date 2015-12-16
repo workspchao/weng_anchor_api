@@ -163,7 +163,11 @@ class Product_category_model extends Base_Common_Model {
         $data_category['name'] = $name;
         $data_category['desc'] = $desc;
         $data_category['parent_id'] = $parentId;
+        
+        if(!isset($sort) || $sort == null)
+            $sort = 1;
         $data_category['sort'] = $sort;
+        
         if(isset($icon_url) && $icon_url != null)
             $data_category['icon_url'] = $icon_url;
         $data_category['updated_by'] = $updatedBy;

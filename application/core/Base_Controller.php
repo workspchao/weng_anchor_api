@@ -719,9 +719,9 @@ class Base_Controller extends CI_Controller {
 
             try
             {
-                if (file_exists($filepath))
+                if (file_exists($ci_result))
                 {
-                    unlink($filepath);
+                    unlink($ci_result);
                 }
             }
             catch(Exception $ex)
