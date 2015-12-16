@@ -697,7 +697,8 @@ class Base_Controller extends CI_Controller {
             }
             
             $fullName = $_FILES[$field]['name'];
-            $extName = strtolower(end(explode(".", $fullName)));
+            $extName = end(explode(".", $fullName));
+            $extName = strtolower($extName);
             $newName = $newName . '.' . $extName;
             
             $ci_result = $this->_ci_upload($field, $newName, $uploadPath, $allowedTypes, $maxSize);
